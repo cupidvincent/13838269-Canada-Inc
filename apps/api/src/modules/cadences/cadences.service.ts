@@ -7,23 +7,20 @@ export class CadencesService {
   private cadences: CreateCadenceDto[] = [];
 
   create(createCadenceDto: CreateCadenceDto): CreateCadenceDto {
-    // Find the current highest ID
     const highestId = this.cadences.length
       ? Math.max(...this.cadences.map((c) => c.id ?? 0))
       : 0;
 
-    // Create new cadence with unique ID
     const newCadence: CreateCadenceDto = {
       ...createCadenceDto,
       id: highestId + 1,
-      // Ensure steps have numeric IDs too
+
       steps: createCadenceDto.steps.map((step, index) => ({
         ...step,
         id: step.id ?? index + 1,
       })),
     };
 
-    // Save to in-memory array
     this.cadences.push(newCadence);
 
     return newCadence;
@@ -31,7 +28,7 @@ export class CadencesService {
 
   get(id?: number) {
     if (id) {
-      return this.cadences.filter((cadence) => cadence.id === id)[0];
+      return this.cadences.filter((cadence) => cadence.id === Number(id))[0];
     }
     return this.cadences;
   }

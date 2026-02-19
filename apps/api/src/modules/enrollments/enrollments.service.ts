@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { TemporalService } from '../temporal/temporal.service';
 import { CreateEnrollmentDto } from './dto/create-enrollment.dto';
 
@@ -9,11 +9,14 @@ export class EnrollmentsService {
   async create(body: CreateEnrollmentDto) {
     const workflowId = `enrollment-${Date.now()}`;
 
-    await this.temporalService.startEnrollmentWorkflow({
+    const response = await this.temporalService.startEnrollmentWorkflow({
       workflowId,
       cadence: body.cadenceId,
       contactEmail: body.contactEmail,
     });
+    if (!response) {
+      throw new NotFoundException('Cadence not found');
+    }
 
     return { workflowId };
   }
